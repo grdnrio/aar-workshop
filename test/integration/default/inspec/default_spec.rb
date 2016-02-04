@@ -2,7 +2,7 @@ describe package('apache2') do
   it { should be_installed }
 end
 
-describe package('mysqld') do
+describe package('mysql-server') do
   it { should be_installed }
 end
 
