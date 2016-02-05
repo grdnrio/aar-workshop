@@ -5,7 +5,6 @@
 # Copyright (c) 2016 Joe Gardiner, All Rights Reserved.
 
 include_recipe 'apt::default'
-include_recipe 'firewall::default'
 
 # install required packages
 package 'apache2'
@@ -28,35 +27,7 @@ directory "#{node['path']['site']}" do
   action :create
 end
 
-# download remote file and trigger extraction
-remote_file "#{node['path']['site']}/master.zip" do
-  source "#{node['app']['source']}"
-#  owner 'www-data'
-#  group 'www-data'
-  mode '0755'
-  action :create_if_missing
-  notifies :run, 'execute[unzip_files]', :immediately
-end
-
-# extraction of master.zip notified by remote_file download
-execute 'unzip_files' do
-  cwd "#{node['path']['site']}"
-  command "unzip master.zip"
-  creates "#{node['path']['site']}/Awesome-Appliance-Repair-master"
-  action :nothing
-  notifies :run, 'execute[move_files]', :immediately
-end
-
-execute 'move_files' do
-  cwd "#{node['path']['site']}/Awesome-Appliance-Repair-master/AAR"
-  command "sudo mv * ../../."
-  action :nothing
-end
-
-# tidy up master.zip file
-file "#{node['path']['site']}/master.zip" do
-  action :delete
-end
+include_recipe 'aar-workshop::appfiles'
 
 # Create config file from template
 template 'aar-apache.conf' do
@@ -65,12 +36,7 @@ template 'aar-apache.conf' do
   mode '0644'
 end
 
-firewall_rule 'http' do
-  port 80
-  protocol :tcp
-  position 1
-  command :allow
-end
+include_recipe 'aar-workshop::firewall'
 
 # enable apache and set supported actions
 service 'apache2' do
