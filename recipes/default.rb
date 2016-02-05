@@ -13,6 +13,7 @@ package 'unzip'
 package 'libapache2-mod-wsgi'
 package 'python-pip'
 package 'python-mysqldb'
+package 'vim'
 
 # pip install required Python package
 execute 'pip_flask' do
@@ -28,6 +29,15 @@ directory "#{node['path']['site']}" do
 end
 
 include_recipe 'aar-workshop::appfiles'
+
+# Create AAR config file from template in web directory
+template 'AAR_config.py' do
+  path "#{node['path']['site']}/AAR_config.py"
+  source 'AAR_config.py.erb'
+  owner 'www-data'
+  group 'www-data'
+  mode '0644'
+end
 
 # Create config file from template
 template 'aar-apache.conf' do
