@@ -33,3 +33,16 @@ end
 describe command('pip list | grep Flask') do
   its(:stdout) { should match /Flask/ }
 end
+
+# check configuration file is created and contains expected content
+describe file('/etc/apache2/sites-enabled/aar-apache.conf') do
+  it { should be_file }
+  it { should exist }
+  its('content') { should match("WSGIScriptAlias / /var/www/AAR/awesomeapp.wsgi") }
+end
+
+# check web file archive downloads correctly
+describe file('/var/www/AAR/master.zip') do
+  it { should be_file }
+  it { should exist }
+end
