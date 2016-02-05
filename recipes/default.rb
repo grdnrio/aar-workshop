@@ -5,6 +5,7 @@
 # Copyright (c) 2016 Joe Gardiner, All Rights Reserved.
 
 include_recipe 'apt::default'
+include_recipe 'firewall::default'
 
 # install required packages
 package 'apache2'
@@ -62,6 +63,13 @@ template 'aar-apache.conf' do
   path "#{node['path']['conf']}/aar-apache.conf"
   source 'aar-apache.conf.erb'
   mode '0644'
+end
+
+firewall_rule 'http' do
+  port 80
+  protocol :tcp
+  position 1
+  command :allow
 end
 
 # enable apache and set supported actions
